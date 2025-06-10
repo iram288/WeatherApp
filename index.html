@@ -2,26 +2,111 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather App</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 320px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: 80%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .result {
+      font-size: 18px;
+      color: #333;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
 </head>
 <body>
-  <form>
-    <lable for="name">Name:</label>
-    <input type="text" id="name" name="name" required>
-    <br><br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    <br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <br><br>
-    <label for="confirm-password">Confirm Password:</label>
-    <input type="password" id="confirm-password" name="confirm-password" required>
-    <br><br>
-    <label
 
-  </form>
-  
+<div class="container">
+  <h2>🌤 Weather App</h2>
+  <input type="text" id="locationInput" placeholder="Enter city or place" />
+  <br>
+  <button onclick="getWeather()">Get Temperature</button>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  async function getWeather() {
+    const location = document.getElementById("locationInput").value.trim();
+    const resultDiv = document.getElementById("result");
+
+    if (location === "") {
+      resultDiv.innerHTML = "<p class='error'>Please enter a location.</p>";
+      return;
+    }
+
+    const apiKey = "1e6d37db18a1485d971132043251006";
+    const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}&aqi=yes`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.error) {
+        resultDiv.innerHTML = `<p class="error">${data.error.message}</p>`;
+      } else {
+        const tempC = data.current.temp_c;
+        const city = data.location.name;
+        const condition = data.current.condition.text;
+
+        resultDiv.innerHTML = `
+          <p><strong>${city}</strong></p>
+          <p>🌡 Temperature: <strong>${tempC}°C</strong></p>
+          <p>☁️ Condition: ${condition}</p>
+        `;
+      }
+    } catch (error) {
+      resultDiv.innerHTML = "<p class='error'>Error fetching data. Please try again later.</p>";
+    }
+  }
+</script>
+
 </body>
 </html>
